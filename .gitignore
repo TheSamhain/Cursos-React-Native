@@ -11,5 +11,5 @@ web-report/
 # macOS
 .DS_Store
 
-.expo*/
+.expo/
 node_modules/
