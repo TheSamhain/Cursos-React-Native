@@ -11,6 +11,7 @@ function LoginScreen() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     var firebaseConfig = {
@@ -39,25 +40,49 @@ function LoginScreen() {
     });
   }
 
+  const renderMessage = () => {
+    if (!message) {
+      return null;
+    }
+
+    return (
+      <View>
+        <Text>{message}</Text>
+      </View>
+    )
+  }
+
   const renderButton = () => {
     if (isLoading) {
-      return <ActivityIndicator />
+      return <ActivityIndicator animating={true} nimating={true} color='blue' />
     }
 
     return <Button title='Entrar' onPress={doLogin} />
   }
 
+  const getMessageByErrorCode = (errorCode) => {
+    switch (errorCode) {
+      case 'auth/wrong-password':
+        return 'Senha incorreta';
+      case 'auth/user-not-found':
+        return 'Usuário não encontrado';
+      default:
+        return 'Erro desconhecido';
+    }
+  }
+
   const doLogin = () => {
     setIsLoading(true);
+    setMessage('');
 
     firebase
       .auth()
       .signInWithEmailAndPassword(infos.mail, infos.password)
       .then(user => {
-        console.log('Logado', user);
+        setMessage('Sucesso');
       })
-      .catch(err => {
-        console.log('Erro', err);
+      .catch(error => {
+        setMessage(getMessageByErrorCode(error.code));
       })
       .then(() => setIsLoading(false));
   }
@@ -83,6 +108,7 @@ function LoginScreen() {
       </FormRow>
 
       {renderButton()}
+      {renderMessage()}
     </View>
   );
 }
