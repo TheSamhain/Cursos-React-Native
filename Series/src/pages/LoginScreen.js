@@ -21,7 +21,19 @@ function LoginScreen() {
     };
 
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword('teste@gmail.com', '123123')
+      .then(user => {
+        console.log('Logado', user);
+      })
+      .catch(err => {
+        console.log('Erro', err);
+      });
   }, [])
 
   const onChangeInfos = (field, value) => {
