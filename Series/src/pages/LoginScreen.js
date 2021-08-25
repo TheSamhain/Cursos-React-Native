@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Text, View, TextInput, StyleSheet, Button } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator } from 'react-native';
 import FormRow from '../components/FormRow';
 import firebase from 'firebase';
 
@@ -9,6 +9,8 @@ function LoginScreen() {
     mail: '',
     password: ''
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     var firebaseConfig = {
@@ -24,27 +26,40 @@ function LoginScreen() {
     if (firebase.apps.length === 0) {
       firebase.initializeApp(firebaseConfig);
     }
-
-    firebase
-      .auth()
-      .signInWithEmailAndPassword('teste@gmail.com', '123123')
-      .then(user => {
-        console.log('Logado', user);
-      })
-      .catch(err => {
-        console.log('Erro', err);
-      });
   }, [])
 
   const onChangeInfos = (field, value) => {
+    if (field == 'mail') {
+      value = String(value).toLowerCase();
+    }
+
     setInfos({
       ...infos,
       [field]: value,
     });
   }
 
+  const renderButton = () => {
+    if (isLoading) {
+      return <ActivityIndicator />
+    }
+
+    return <Button title='Entrar' onPress={doLogin} />
+  }
+
   const doLogin = () => {
-    console.log();
+    setIsLoading(true);
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(infos.mail, infos.password)
+      .then(user => {
+        console.log('Logado', user);
+      })
+      .catch(err => {
+        console.log('Erro', err);
+      })
+      .then(() => setIsLoading(false));
   }
 
   return (
@@ -67,7 +82,7 @@ function LoginScreen() {
         />
       </FormRow>
 
-      <Button title='Entrar' onPress={doLogin} />
+      {renderButton()}
     </View>
   );
 }
