@@ -60,12 +60,15 @@ function LoginScreen() {
     return <Button title='Entrar' onPress={doLogin} color="#f4511e" />
   }
 
-  const getMessageByErrorCode = (errorCode) => {
+  const getMessageByErrorCode = (errorCode) => {    
+    console.log(errorCode);
     switch (errorCode) {
       case 'auth/wrong-password':
         return 'Senha incorreta';
       case 'auth/user-not-found':
         return 'Usuário não encontrado';
+      case 'auth/weak-password':
+          return 'A senha deve ter no mínimo 6 caracteres';        
       default:
         return 'Erro desconhecido';
     }
@@ -75,15 +78,45 @@ function LoginScreen() {
     setIsLoading(true);
     setMessage('');
 
+    const {mail, password} = infos;
+
     firebase
       .auth()
-      .signInWithEmailAndPassword(infos.mail, infos.password)
+      .signInWithEmailAndPassword(mail, password)
       .then(user => {
         setMessage('Sucesso');
       })
       .catch(error => {
-        //setMessage(getMessageByErrorCode(error.code));
-        firebase.auth().createUserWithEmailAndPassword(infos.mail, infos.password);
+        if(error.code === 'auth/user-not-found'){
+          Alert.alert(
+            'Usuario não encontrado',
+            'Deseja criar um cadastro com as informações inseridas?',
+            [
+              {
+                text: 'Não',
+                onPress: () => {
+                  console.log('Clicou em não criar usuário')
+                },
+              },
+              {
+                text: 'Sim',
+                onPress: () => {
+                  firebase
+                  .auth()
+                  .createUserWithEmailAndPassword(mail, password)
+                  .then((result) => {
+                    console.log(result);
+                  })
+                  .catch((error) => {
+                    setMessage(getMessageByErrorCode(error.code));
+                  });
+                }
+              }              
+            ]
+            );
+        }else{
+          setMessage(getMessageByErrorCode(error.code));
+        }
       })
       .then(() => setIsLoading(false));
   }
