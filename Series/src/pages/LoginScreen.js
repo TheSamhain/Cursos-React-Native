@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Button, ActivityIndicator, Alert } from 'react-native';
 import FormRow from '../components/FormRow';
 import firebase from 'firebase';
 
@@ -54,10 +54,10 @@ function LoginScreen() {
 
   const renderButton = () => {
     if (isLoading) {
-      return <ActivityIndicator animating={true} nimating={true} color='blue' />
+      return <ActivityIndicator animating={true} nimating={true} color='#f4511e' />
     }
 
-    return <Button title='Entrar' onPress={doLogin} />
+    return <Button title='Entrar' onPress={doLogin} color="#f4511e" />
   }
 
   const getMessageByErrorCode = (errorCode) => {
@@ -82,7 +82,8 @@ function LoginScreen() {
         setMessage('Sucesso');
       })
       .catch(error => {
-        setMessage(getMessageByErrorCode(error.code));
+        //setMessage(getMessageByErrorCode(error.code));
+        firebase.auth().createUserWithEmailAndPassword(infos.mail, infos.password);
       })
       .then(() => setIsLoading(false));
   }
