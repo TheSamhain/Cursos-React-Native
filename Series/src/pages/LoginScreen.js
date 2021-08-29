@@ -74,6 +74,10 @@ function LoginScreen() {
     }
   }
 
+  const loginUserSuccess = () => {
+
+  }
+
   const doLogin = () => {
     setIsLoading(true);
     setMessage('');
@@ -84,7 +88,7 @@ function LoginScreen() {
       .auth()
       .signInWithEmailAndPassword(mail, password)
       .then(user => {
-        setMessage('Sucesso');
+        loginUserSuccess();
       })
       .catch(error => {
         if(error.code === 'auth/user-not-found'){
@@ -105,7 +109,7 @@ function LoginScreen() {
                   .auth()
                   .createUserWithEmailAndPassword(mail, password)
                   .then((result) => {
-                    console.log(result);
+                    loginUserSuccess();
                   })
                   .catch((error) => {
                     setMessage(getMessageByErrorCode(error.code));
